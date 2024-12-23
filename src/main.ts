@@ -1,6 +1,7 @@
 import './style.css';
 import * as THREE from 'three';
 import WebGL from 'three/addons/capabilities/WebGL.js';
+import {threeArray, mountainArray} from './shapes';
 
 let canvas = document.querySelector( '#canvas' );
 let cursorX = canvas!.clientWidth;
@@ -41,69 +42,33 @@ function main() {
 	scene.fog = new THREE.Fog(color, near, fogFar);
 
 
-	const bumpTexture = new THREE.TextureLoader().load('snow_bump_map.jpeg')
+	const bumpTextureSnow = new THREE.TextureLoader().load('snow_bump_map.jpeg')
 	const materialSnow = new THREE.MeshPhongMaterial({ 
 		color: "white", 
 		flatShading: true, 
 		side: THREE.DoubleSide, 
-		bumpMap: bumpTexture, 
+		bumpMap: bumpTextureSnow, 
 		bumpScale: 1 
 	});
 	
 	
 	const width = 200;  
 	const height =  1;  
-	const depth = 50;  
+	const depth = 100;  
 	const geometryGround = new THREE.BoxGeometry( width, height, depth );
 	const ground = new THREE.Mesh( geometryGround, materialSnow );
 	ground.position.set(0, -10, -20);
 	ground.rotation.y = 0;
 	scene.add(ground);
 
-	// radius, segments, positionX, positionY, positionZ
-	const mountainArray = [
-		// left side
-		[40, 9, -65, 0, -20],
-		[30, 4, -35, 0, -10],
-		[15, 5, -15, 0, -3],
-		[15, 8, -35, 0, -0],
-		// right side
-		[40, 9, 65, -10, -20],
-		[30, 8, 40, -8, -10],
-		[15, 12, 65, -5, -5],
-		[15, 9, 25, -5, -7],
-		[15, 14, 35, -5, -3],
-		// horizont
-		[15, 9, -12, -7, -25],
-		[15, 6, 6, -11, -25],
-		[15, 5, 27, -7, -25],
-	];
-	mountainArray.forEach(mountain => {
-		const geometryMountain = new THREE.CircleGeometry( mountain[0], mountain[1]);
-		const newMountain = new THREE.Mesh( geometryMountain, materialSnow );
-		newMountain.position.set(mountain[2], mountain[3], mountain[4]);
-		newMountain.rotation.x = -0.05;
-		ground.add(newMountain);
-	});
+	drawThrees(threeArray);
+	drawMountain(mountainArray);
 
 	//   ADD LIGHT   \\
 	const intensity = 4;
 	const lightOne = new THREE.DirectionalLight("white", intensity);
-	lightOne.position.set(0, 5, 15);
+	lightOne.position.set(0, 20, 35);
 	scene.add(lightOne);
-
-
-	function resizeRendererToDisplaySize( renderer: THREE.WebGLRenderer ) {
-		const canvas = renderer.domElement;
-		const pixelRatio = window.devicePixelRatio;
-		const width = Math.floor( canvas.clientWidth * pixelRatio );
-		const height = Math.floor( canvas.clientHeight * pixelRatio );
-		const needResize = canvas.width !== width || canvas.height !== height;
-		if ( needResize ) {
-			renderer.setSize( width, height, false );
-		}
-		return needResize;
-	}
 
 	function render( time: number ) {
 		time *= 0.001;
@@ -123,6 +88,111 @@ function main() {
 		requestAnimationFrame( render );
 	}
 	requestAnimationFrame( render );
+
+	//  ===  FUNCTIONS  ===  \\
+	
+	function resizeRendererToDisplaySize( renderer: THREE.WebGLRenderer ) {
+		const canvas = renderer.domElement;
+		const pixelRatio = window.devicePixelRatio;
+		const width = Math.floor( canvas.clientWidth * pixelRatio );
+		const height = Math.floor( canvas.clientHeight * pixelRatio );
+		const needResize = canvas.width !== width || canvas.height !== height;
+		if ( needResize ) {
+			renderer.setSize( width, height, false );
+		}
+		return needResize;
+	}
+
+
+	function drawThrees(array: any[]) {
+		array.forEach(shape => {
+			const pointsStump = [];
+			const pointsThree = [];
+			const pointsSnow = [];
+			for ( let i = 0; i < 10; ++ i ) {
+				// 	params: sinWave, width, positionHeight, shapeHeight
+				pointsStump.push( new THREE.Vector2( 
+					Math.sin( i * 0.4 ) * 1.5 + 0, ( i - 5 ) * 0.8 
+				) );
+				pointsThree.push( new THREE.Vector2( 
+					Math.sin( i * shape.params[0] ) * shape.params[1] + 0, ( i - shape.params[2] ) * shape.params[3] 
+				) );
+				pointsSnow.push( new THREE.Vector2( 
+					Math.sin( i * shape.params[0] ) * (shape.params[1]+0.3) + 0, ( i - (shape.params[2]+1.6) ) * (shape.params[3]-0.2) 
+				) );
+			}
+
+			const segments = 12;  
+			const phiStart = Math.PI * 0.00;  
+			const phiLength = Math.PI * 2.00;  
+			const geometryShapeStump = new THREE.LatheGeometry(pointsStump, segments, phiStart, phiLength );
+			const geometryShapeThree = new THREE.LatheGeometry(pointsThree, segments, phiStart, phiLength );
+			const geometryShapeSnow = new THREE.LatheGeometry(pointsSnow, segments, phiStart, phiLength );
+	
+			const materialStump = new THREE.MeshPhongMaterial({ 
+				color: "brown", 
+				flatShading: true, 
+				side: THREE.DoubleSide, 
+				bumpMap: bumpTextureSnow, 
+				bumpScale: 1 
+			});
+			const materialThree = new THREE.MeshPhongMaterial({ 
+				color: shape.color, 
+				flatShading: true, 
+				side: THREE.DoubleSide, 
+				bumpMap: bumpTextureSnow, 
+				bumpScale: 1 
+			});
+			const materialSnow = new THREE.MeshPhongMaterial({ 
+				color: "white", 
+				flatShading: true, 
+				side: THREE.DoubleSide, 
+				bumpMap: bumpTextureSnow, 
+				bumpScale: 1 
+			});
+	
+			
+			const newStump = new THREE.Mesh( geometryShapeStump, materialStump );
+			const newThree = new THREE.Mesh( geometryShapeThree, materialThree );
+			const newSnow = new THREE.Mesh( geometryShapeSnow, materialSnow );
+			[newStump, newThree, newSnow].forEach(model => {
+				model.position.set(shape.pos.x, shape.pos.y, shape.pos.z);
+				model.rotation.x = 3.1;
+				ground.add(model);
+			})
+		});
+	}
+	
+	
+	function drawMountain(array: any[]) {
+		const segments = 12;  
+		const phiStart = Math.PI * 0.00;  
+		const phiLength = Math.PI * 2.00;  
+
+		array.forEach(shape => {
+			const points = [];
+			for ( let i = 0; i < 10; ++ i ) {
+				points.push( new THREE.Vector2( 
+					Math.sin( i * shape.params[0] ) * shape.params[1] + 0, ( i - shape.params[2] ) * shape.params[3] 
+				) );
+			}
+			const geometryShape = new THREE.LatheGeometry(points, segments, phiStart, phiLength );
+	
+			const materialSnow = new THREE.MeshPhongMaterial({ 
+				color: shape.color, 
+				flatShading: true, 
+				side: THREE.DoubleSide, 
+				bumpMap: bumpTextureSnow, 
+				bumpScale: 1 
+			});
+	
+			const newShape = new THREE.Mesh( geometryShape, materialSnow );
+			newShape.position.set(shape.pos.x, shape.pos.y, shape.pos.z);
+			newShape.rotation.x = 3;
+			ground.add(newShape);
+		});
+	}
+
 }
 
 
