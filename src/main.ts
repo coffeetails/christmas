@@ -1,7 +1,10 @@
 import './style.css';
 import * as THREE from 'three';
 import WebGL from 'three/addons/capabilities/WebGL.js';
+import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 import {threeArray, mountainArray} from './shapes';
+import { FontLoader } from 'three/examples/jsm/Addons.js';
+
 
 let canvas = document.querySelector( '#canvas' );
 let cursorX = canvas!.clientWidth;
@@ -33,7 +36,7 @@ function main() {
 	const far = 100;
 	const camera = new THREE.PerspectiveCamera( fov, aspect, near, far );
 	camera.position.z = 7;
-	camera.position.y = 1;
+	camera.position.y = 0;
 
 
 	const fogFar = 100;
@@ -50,37 +53,50 @@ function main() {
 		bumpMap: bumpTextureSnow, 
 		bumpScale: 1 
 	});
-	
+
+	const materialText = new THREE.MeshPhongMaterial({
+		color: "white",
+		flatShading: true,
+	});
 	
 	const width = 200;  
 	const height =  1;  
 	const depth = 100;  
 	const geometryGround = new THREE.BoxGeometry( width, height, depth );
 	const ground = new THREE.Mesh( geometryGround, materialSnow );
-	ground.position.set(0, -10, -20);
+	ground.position.set(0, -11, -20);
 	ground.rotation.y = 0;
 	scene.add(ground);
 
 	drawThrees(threeArray);
 	drawMountain(mountainArray);
 
+	const loader = new FontLoader(); 
+	loader.load( 'The_Perfect_Christmas.json', function ( font ) { 
+		const geometryText = new TextGeometry( 'Have a warm and cozy Yule', { 
+			font: font,
+			size:  2.0,  
+			depth: 0.1,  
+			curveSegments:  1,
+		} ); 
+		const floatingText = new THREE.Mesh( geometryText, materialText );
+		floatingText.position.set(-9, 1.2, 10);
+		floatingText.rotation.x = -0.1;
+		ground.add(floatingText);
+	} );
+
 	//   ADD LIGHT   \\
 	const lightIntensity = 2;
-	const lightOne = new THREE.DirectionalLight("rgba(235,104,36,1)", lightIntensity);
-	lightOne.position.set(0, 100, -100);
-	scene.add(lightOne);
-
-	const lightTwo = new THREE.DirectionalLight("rgb(75, 21, 125)", lightIntensity);
-	lightTwo.position.set(0, 100, -50);
-	// scene.add(lightTwo);
-
-	const lightThree = new THREE.DirectionalLight("rgba(46,30,108,1)", lightIntensity+1);
-	lightThree.position.set(0, 100, 0);
-	scene.add(lightThree);
-
-	const lightFour = new THREE.DirectionalLight("rgb(104, 102, 102)", lightIntensity);
-	lightFour.position.set(0, 100, 100);
-	scene.add(lightFour);
+	const lights = [
+		{color: "rgba(235,104,36,1)", pos: [0, 100, -100]},
+		{color: "rgba(46,30,108,1)", pos: [0, 100, 0]},
+		{color: "rgba(104,102,102,1)", pos: [0, 100, 100]},
+	];
+	lights.forEach(light => {
+		const newLight = new THREE.DirectionalLight(light.color, lightIntensity);
+		newLight.position.set(light.pos[0],light.pos[1],light.pos[2]);
+		scene.add(newLight);
+	});
 
 
 	function render( time: number ) {
@@ -92,7 +108,6 @@ function main() {
 		}
 		const canvasMiddleX = canvas!.clientWidth / 2;
 		const canvasMiddleY = canvas!.clientHeight / 2;
-		console.log(`CURSOR: X: ${(cursorY-canvasMiddleY)*-0.001} Y: ${(cursorX-canvasMiddleX)*0.001}`);
 
 		ground.rotation.x = (cursorY-canvasMiddleY)*0.0001;
 		ground.rotation.y = (cursorX-canvasMiddleX)*0.0001;
@@ -120,21 +135,33 @@ function main() {
 		const pointsStump = [];
 		const pointsTree = [];
 		const pointsSnow = [];
+		const pointsTreeOne = [];
+		const pointsSnowOne = [];
+		const pointsTreeTwo = [];
+		const pointsSnowTwo = [];
 		for ( let i = 0; i < 10; ++ i ) {
-			// 	params: sinWave, width, positionHeight, shapeHeight
-			pointsStump.push( new THREE.Vector2( Math.sin( i * 0.4 ) * 1.5 + 0, ( i - 5 ) * 1.5 ) );
-			pointsTree.push( new THREE.Vector2( Math.sin( i * shape.params[0] ) * shape.params[1] + 0, ( i - shape.params[2] ) * shape.params[3] ) );
-			pointsSnow.push( new THREE.Vector2( Math.sin( i * shape.params[0] ) * (shape.params[1]+0.3) + 0, ( i - (shape.params[2]+1.6) ) * (shape.params[3]-0.2) ) );
+			// 											params: sinWave, width, positionHeight, shapeHeight
+		pointsStump.push( new THREE.Vector2( Math.sin( i * 0.4 ) * 1.5 + 0, ( i - 5 ) * 1.5 ) );
+		pointsTree.push( new THREE.Vector2( Math.sin( i * shape.params[0] ) * (shape.params[1]*4) + 0, ( i - shape.params[2] ) * shape.params[3] ) );
+		pointsSnow.push( new THREE.Vector2( Math.sin( i * shape.params[0] ) * (shape.params[1]*4) + 0, ( i - (shape.params[2]*0.8) ) * (shape.params[3]*2.3) ) );
+		
+		pointsTreeOne.push( new THREE.Vector2( Math.sin( i * shape.params[0] ) * (shape.params[1]*3.2) + 0, ( i - (shape.params[2]*1.5) ) * shape.params[3] ) );
+		pointsSnowOne.push( new THREE.Vector2( Math.sin( i * shape.params[0] ) * (shape.params[1]*3.2) + 0, ( i - (shape.params[2]*1.01) ) * (shape.params[3]*2.3) ) );
+
+		pointsTreeTwo.push( new THREE.Vector2( Math.sin( i * shape.params[0] ) * (shape.params[1]*2.5) + 0, ( i - (shape.params[2]*2.05) ) * shape.params[3] ) );
+		pointsSnowTwo.push( new THREE.Vector2( Math.sin( i * shape.params[0] ) * (shape.params[1]*2.3) + 0, ( i - (shape.params[2]*1.8) ) * (shape.params[3]*1.3) ) );
 		}
 
-		const segments = 12;  
-		const phiStart = Math.PI * 0.00;  
-		const phiLength = Math.PI * 2.00;  
-		const geometryShapeStump = new THREE.LatheGeometry(pointsStump, segments, phiStart, phiLength );
-		const geometryShapeTree = new THREE.LatheGeometry(pointsTree, segments, phiStart, phiLength );
-		const geometryShapeSnow = new THREE.LatheGeometry(pointsSnow, segments, phiStart, phiLength );
+		const segments = 12;
+		const geometryShapeStump = new THREE.LatheGeometry(pointsStump, segments);
+		const geometryShapeTree = new THREE.LatheGeometry(pointsTree, segments);
+		const geometryShapeSnow = new THREE.LatheGeometry(pointsSnow, segments);
 
-		
+		const geometryShapeTreeOne = new THREE.LatheGeometry(pointsTreeOne, segments);
+		const geometryShapeSnowOne = new THREE.LatheGeometry(pointsSnowOne, segments);
+		const geometryShapeTreeTwo = new THREE.LatheGeometry(pointsTreeTwo, segments);
+		const geometryShapeSnowTwo = new THREE.LatheGeometry(pointsSnowTwo, segments);
+
 		const materialStump = new THREE.MeshPhongMaterial({ 
 			color: "brown", 
 			flatShading: true, 
@@ -157,11 +184,17 @@ function main() {
 			bumpScale: 1 
 		});
 
-		
-		const newStump = new THREE.Mesh( geometryShapeStump, materialStump );
-		const newTree = new THREE.Mesh( geometryShapeTree, materialTree );
-		const newSnow = new THREE.Mesh( geometryShapeSnow, materialSnow );
-		[newStump, newTree, newSnow].forEach(model => {
+		const newTrees = [
+			new THREE.Mesh( geometryShapeStump, materialStump ),
+			new THREE.Mesh( geometryShapeTree, materialTree ),
+			new THREE.Mesh( geometryShapeSnow, materialSnow ),
+			new THREE.Mesh( geometryShapeTreeOne, materialTree ),
+			new THREE.Mesh( geometryShapeSnowOne, materialSnow ),
+			new THREE.Mesh( geometryShapeTreeTwo, materialTree ),
+			new THREE.Mesh( geometryShapeSnowTwo, materialSnow ),
+		]
+
+		newTrees.forEach(model => {
 			model.position.set(shape.pos.x, shape.pos.y, shape.pos.z);
 			model.rotation.x = 3.1;
 			ground.add(model);

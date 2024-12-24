@@ -2,9 +2,14 @@ html, body {
     margin: 0;
     height: 100%;
     width: 100%;
-    background: rgb(29,29,29);
     overflow: hidden;
 
+    background: rgb(29,29,29);
+    background-image: url('starry_sky_transparent.png');
+    background-size: contain;
+    background-position-y: -5px;
+    background-repeat: no-repeat;
+    
     display: grid;
     grid-template-columns: repeat(1,1fr);
     grid-template-rows: repeat(1,1fr);
@@ -19,8 +24,8 @@ html, body {
     display: block;
     border-radius: 1rem;
     border: 2px solid black;
-
+    box-shadow: 0 0 20px 15px black;
+    
     background: rgb(29,29,29);
-    background: linear-gradient(0deg, rgba(29,29,29,1) 25%, rgba(235,104,36,1) 40%, rgba(135,50,167,1) 54%, rgba(46,30,110,1) 67%, rgba(46,30,108,1) 83%, rgba(33,33,33,1) 100%);
-
+    background: linear-gradient(0deg, rgba(29,29,29,1) 25%, rgba(235,104,36,1) 40%, rgba(135,50,167,1) 61%, rgba(46,30,110,0.9) 77%, rgba(46, 30, 108, 0.6) 83%, rgba(33, 33, 33, 0.2) 100%);
 }
