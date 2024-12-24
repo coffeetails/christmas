@@ -36,7 +36,7 @@ function main() {
 	camera.position.y = 1;
 
 
-	const fogFar = 50;
+	const fogFar = 100;
 	const scene = new THREE.Scene();
 	const color = '#000000';
 	scene.fog = new THREE.Fog(color, near, fogFar);
@@ -65,10 +65,23 @@ function main() {
 	drawMountain(mountainArray);
 
 	//   ADD LIGHT   \\
-	const intensity = 4;
-	const lightOne = new THREE.DirectionalLight("white", intensity);
-	lightOne.position.set(0, 20, 35);
+	const lightIntensity = 2;
+	const lightOne = new THREE.DirectionalLight("rgba(235,104,36,1)", lightIntensity);
+	lightOne.position.set(0, 100, -100);
 	scene.add(lightOne);
+
+	const lightTwo = new THREE.DirectionalLight("rgb(75, 21, 125)", lightIntensity);
+	lightTwo.position.set(0, 100, -50);
+	// scene.add(lightTwo);
+
+	const lightThree = new THREE.DirectionalLight("rgba(46,30,108,1)", lightIntensity+1);
+	lightThree.position.set(0, 100, 0);
+	scene.add(lightThree);
+
+	const lightFour = new THREE.DirectionalLight("rgb(104, 102, 102)", lightIntensity);
+	lightFour.position.set(0, 100, 100);
+	scene.add(lightFour);
+
 
 	function render( time: number ) {
 		time *= 0.001;
@@ -89,8 +102,6 @@ function main() {
 	}
 	requestAnimationFrame( render );
 
-	//  ===  FUNCTIONS  ===  \\
-	
 	function resizeRendererToDisplaySize( renderer: THREE.WebGLRenderer ) {
 		const canvas = renderer.domElement;
 		const pixelRatio = window.devicePixelRatio;
@@ -105,62 +116,57 @@ function main() {
 
 
 	function drawThrees(array: any[]) {
-		array.forEach(shape => {
-			const pointsStump = [];
-			const pointsThree = [];
-			const pointsSnow = [];
-			for ( let i = 0; i < 10; ++ i ) {
-				// 	params: sinWave, width, positionHeight, shapeHeight
-				pointsStump.push( new THREE.Vector2( 
-					Math.sin( i * 0.4 ) * 1.5 + 0, ( i - 5 ) * 0.8 
-				) );
-				pointsThree.push( new THREE.Vector2( 
-					Math.sin( i * shape.params[0] ) * shape.params[1] + 0, ( i - shape.params[2] ) * shape.params[3] 
-				) );
-				pointsSnow.push( new THREE.Vector2( 
-					Math.sin( i * shape.params[0] ) * (shape.params[1]+0.3) + 0, ( i - (shape.params[2]+1.6) ) * (shape.params[3]-0.2) 
-				) );
-			}
+	array.forEach(shape => {
+		const pointsStump = [];
+		const pointsTree = [];
+		const pointsSnow = [];
+		for ( let i = 0; i < 10; ++ i ) {
+			// 	params: sinWave, width, positionHeight, shapeHeight
+			pointsStump.push( new THREE.Vector2( Math.sin( i * 0.4 ) * 1.5 + 0, ( i - 5 ) * 1.5 ) );
+			pointsTree.push( new THREE.Vector2( Math.sin( i * shape.params[0] ) * shape.params[1] + 0, ( i - shape.params[2] ) * shape.params[3] ) );
+			pointsSnow.push( new THREE.Vector2( Math.sin( i * shape.params[0] ) * (shape.params[1]+0.3) + 0, ( i - (shape.params[2]+1.6) ) * (shape.params[3]-0.2) ) );
+		}
 
-			const segments = 12;  
-			const phiStart = Math.PI * 0.00;  
-			const phiLength = Math.PI * 2.00;  
-			const geometryShapeStump = new THREE.LatheGeometry(pointsStump, segments, phiStart, phiLength );
-			const geometryShapeThree = new THREE.LatheGeometry(pointsThree, segments, phiStart, phiLength );
-			const geometryShapeSnow = new THREE.LatheGeometry(pointsSnow, segments, phiStart, phiLength );
-	
-			const materialStump = new THREE.MeshPhongMaterial({ 
-				color: "brown", 
-				flatShading: true, 
-				side: THREE.DoubleSide, 
-				bumpMap: bumpTextureSnow, 
-				bumpScale: 1 
-			});
-			const materialThree = new THREE.MeshPhongMaterial({ 
-				color: shape.color, 
-				flatShading: true, 
-				side: THREE.DoubleSide, 
-				bumpMap: bumpTextureSnow, 
-				bumpScale: 1 
-			});
-			const materialSnow = new THREE.MeshPhongMaterial({ 
-				color: "white", 
-				flatShading: true, 
-				side: THREE.DoubleSide, 
-				bumpMap: bumpTextureSnow, 
-				bumpScale: 1 
-			});
-	
-			
-			const newStump = new THREE.Mesh( geometryShapeStump, materialStump );
-			const newThree = new THREE.Mesh( geometryShapeThree, materialThree );
-			const newSnow = new THREE.Mesh( geometryShapeSnow, materialSnow );
-			[newStump, newThree, newSnow].forEach(model => {
-				model.position.set(shape.pos.x, shape.pos.y, shape.pos.z);
-				model.rotation.x = 3.1;
-				ground.add(model);
-			})
+		const segments = 12;  
+		const phiStart = Math.PI * 0.00;  
+		const phiLength = Math.PI * 2.00;  
+		const geometryShapeStump = new THREE.LatheGeometry(pointsStump, segments, phiStart, phiLength );
+		const geometryShapeTree = new THREE.LatheGeometry(pointsTree, segments, phiStart, phiLength );
+		const geometryShapeSnow = new THREE.LatheGeometry(pointsSnow, segments, phiStart, phiLength );
+
+		
+		const materialStump = new THREE.MeshPhongMaterial({ 
+			color: "brown", 
+			flatShading: true, 
+			side: THREE.DoubleSide, 
+			bumpMap: bumpTextureSnow, 
+			bumpScale: 1 
 		});
+		const materialTree = new THREE.MeshPhongMaterial({ 
+			color: shape.color, 
+			flatShading: true, 
+			side: THREE.DoubleSide, 
+			bumpMap: bumpTextureSnow, 
+			bumpScale: 1 
+		});
+		const materialSnow = new THREE.MeshPhongMaterial({ 
+			color: "white", 
+			flatShading: true, 
+			side: THREE.DoubleSide, 
+			bumpMap: bumpTextureSnow, 
+			bumpScale: 1 
+		});
+
+		
+		const newStump = new THREE.Mesh( geometryShapeStump, materialStump );
+		const newTree = new THREE.Mesh( geometryShapeTree, materialTree );
+		const newSnow = new THREE.Mesh( geometryShapeSnow, materialSnow );
+		[newStump, newTree, newSnow].forEach(model => {
+			model.position.set(shape.pos.x, shape.pos.y, shape.pos.z);
+			model.rotation.x = 3.1;
+			ground.add(model);
+		});
+	});
 	}
 	
 	
