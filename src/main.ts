@@ -45,14 +45,23 @@ function main() {
 	scene.fog = new THREE.Fog(color, near, fogFar);
 
 
-	const bumpTextureSnow = new THREE.TextureLoader().load('snow_bump_map.jpeg')
+	const bumpTextureSnow = new THREE.TextureLoader().load('snow_04_bump.jpg');
+	bumpTextureSnow.wrapS = THREE.RepeatWrapping;
+	bumpTextureSnow.wrapT = THREE.RepeatWrapping;
+	bumpTextureSnow.rotation = 80;
+	const bumpTextureTree = new THREE.TextureLoader().load('snow_04_bump_small.jpg');
+	bumpTextureTree.wrapS = THREE.RepeatWrapping;
+	bumpTextureTree.wrapT = THREE.RepeatWrapping;
+	// bumpTextureTree.rotation = 110;
+
 	const materialSnow = new THREE.MeshPhongMaterial({ 
 		color: "white", 
 		flatShading: true, 
 		side: THREE.DoubleSide, 
 		bumpMap: bumpTextureSnow, 
-		bumpScale: 1 
+		bumpScale: 7,
 	});
+
 
 	const materialText = new THREE.MeshPhongMaterial({
 		color: "white",
@@ -141,15 +150,15 @@ function main() {
 		const pointsSnowTwo = [];
 		for ( let i = 0; i < 10; ++ i ) {
 			// 											params: sinWave, width, positionHeight, shapeHeight
-		pointsStump.push( new THREE.Vector2( Math.sin( i * 0.4 ) * 1.5 + 0, ( i - 5 ) * 1.5 ) );
-		pointsTree.push( new THREE.Vector2( Math.sin( i * shape.params[0] ) * (shape.params[1]*4) + 0, ( i - shape.params[2] ) * shape.params[3] ) );
-		pointsSnow.push( new THREE.Vector2( Math.sin( i * shape.params[0] ) * (shape.params[1]*4) + 0, ( i - (shape.params[2]*0.8) ) * (shape.params[3]*2.3) ) );
-		
-		pointsTreeOne.push( new THREE.Vector2( Math.sin( i * shape.params[0] ) * (shape.params[1]*3.2) + 0, ( i - (shape.params[2]*1.5) ) * shape.params[3] ) );
-		pointsSnowOne.push( new THREE.Vector2( Math.sin( i * shape.params[0] ) * (shape.params[1]*3.2) + 0, ( i - (shape.params[2]*1.01) ) * (shape.params[3]*2.3) ) );
+			pointsStump.push( new THREE.Vector2( Math.sin( i * 0.4 ) * 1.5 + 0, ( i - 5 ) * 1.5 ) );
+			pointsTree.push( new THREE.Vector2( Math.sin( i * shape.params[0] ) * (shape.params[1]*4) + 0, ( i - shape.params[2] ) * shape.params[3] ) );
+			pointsSnow.push( new THREE.Vector2( Math.sin( i * shape.params[0] ) * (shape.params[1]*4) + 0, ( i - (shape.params[2]*0.8) ) * (shape.params[3]*2.3) ) );
+			
+			pointsTreeOne.push( new THREE.Vector2( Math.sin( i * shape.params[0] ) * (shape.params[1]*3.2) + 0, ( i - (shape.params[2]*1.5) ) * shape.params[3] ) );
+			pointsSnowOne.push( new THREE.Vector2( Math.sin( i * shape.params[0] ) * (shape.params[1]*3.2) + 0, ( i - (shape.params[2]*1.01) ) * (shape.params[3]*2.3) ) );
 
-		pointsTreeTwo.push( new THREE.Vector2( Math.sin( i * shape.params[0] ) * (shape.params[1]*2.5) + 0, ( i - (shape.params[2]*2.05) ) * shape.params[3] ) );
-		pointsSnowTwo.push( new THREE.Vector2( Math.sin( i * shape.params[0] ) * (shape.params[1]*2.3) + 0, ( i - (shape.params[2]*1.8) ) * (shape.params[3]*1.3) ) );
+			pointsTreeTwo.push( new THREE.Vector2( Math.sin( i * shape.params[0] ) * (shape.params[1]*2.5) + 0, ( i - (shape.params[2]*2.05) ) * shape.params[3] ) );
+			pointsSnowTwo.push( new THREE.Vector2( Math.sin( i * shape.params[0] ) * (shape.params[1]*2.3) + 0, ( i - (shape.params[2]*1.8) ) * (shape.params[3]*1.3) ) );
 		}
 
 		const segments = 12;
@@ -162,26 +171,27 @@ function main() {
 		const geometryShapeTreeTwo = new THREE.LatheGeometry(pointsTreeTwo, segments);
 		const geometryShapeSnowTwo = new THREE.LatheGeometry(pointsSnowTwo, segments);
 
+
 		const materialStump = new THREE.MeshPhongMaterial({ 
 			color: "brown", 
-			flatShading: true, 
+			flatShading: false, 
 			side: THREE.DoubleSide, 
-			bumpMap: bumpTextureSnow, 
-			bumpScale: 1 
+			bumpMap: bumpTextureTree, 
+			bumpScale: 30,
 		});
 		const materialTree = new THREE.MeshPhongMaterial({ 
 			color: shape.color, 
-			flatShading: true, 
+			flatShading: false, 
 			side: THREE.DoubleSide, 
-			bumpMap: bumpTextureSnow, 
-			bumpScale: 1 
+			bumpMap: bumpTextureTree, 
+			bumpScale: 20,
 		});
 		const materialSnow = new THREE.MeshPhongMaterial({ 
 			color: "white", 
-			flatShading: true, 
+			flatShading: false, 
 			side: THREE.DoubleSide, 
-			bumpMap: bumpTextureSnow, 
-			bumpScale: 1 
+			bumpMap: bumpTextureTree, 
+			bumpScale: 4,
 		});
 
 		const newTrees = [

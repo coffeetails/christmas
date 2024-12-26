@@ -8,7 +8,8 @@ html, body {
     background-image: url('starry_sky_transparent.png');
     background-size: contain;
     background-position-y: -5px;
-    background-repeat: no-repeat;
+    background-position-x: center;
+    /* background-repeat: no-repeat; */
     
     display: grid;
     grid-template-columns: repeat(1,1fr);
